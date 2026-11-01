@@ -1,1 +1,1 @@
-# B-i_th-c_h-nh_01
+Bài thực hành 01 lớp OOP N03 Khoa CNTT Trường Đại học Hàng hải Việt Nam
