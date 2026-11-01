@@ -1,1 +1,4 @@
-Bài thực hành 01 lớp OOP N03 Khoa CNTT Trường Đại học Hàng hải Việt Nam
+Nguyễn Đức Mạnh - 115085
+Môn học: OOP
+Lớp: N03
+Giảng viên phụ trách: Nguyễn Hạnh Phúc
