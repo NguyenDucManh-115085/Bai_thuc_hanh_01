@@ -6,509 +6,507 @@
 
 using namespace std;
 
-//Lớp xe
-class Car {
+class Xe {
 private:
-    int carID;
-    string carType;
-    int hourIn;
-    int parkTime; 
-    double parkingFee;
-    bool isParked;
+    int maXe;
+    string loaiXe;
+    int gioVao;
+    int gioGui; 
+    double phiGui;
+    bool trangThaiGui;
+
 public:
-    Car(): carID(0), carType(""), hourIn(0), parkTime(0), parkingFee(0.0), isParked(false) {}
-    Car(int ID, string type, int hour, int duration): carID(ID), carType(type), hourIn(hour), parkTime(duration), parkingFee(0.0), isParked(true) {
-        this->carType = modifiedCarType();
-        calculateParkingFee();    
+    Xe(): maXe(0), loaiXe(""), gioVao(0), gioGui(0), phiGui(0.0), trangThaiGui(false) {}
+    Xe(int ID, string type, int hour, int duration): maXe(ID), loaiXe(type), gioVao(hour), gioGui(duration), phiGui(0.0), trangThaiGui(true) {
+        this->loaiXe = chuanHoaXe();
+        tinhPhiGuiXe();    
     }
-    //Nhận vào
-    int getCarID() const {return carID;}
-    string getCarType() const {return carType;}
-    int getHourIn() const {return hourIn;}
-    int getParkTime() const {return parkTime;}
-    bool getIsParked() const { return isParked; }    
-    double getParkingFee() const { return parkingFee; }    
-    //Gán giá trị    
-    void setCarID(int ID) {carID = ID;}    
-    void setCarType(string type) {
-        carType = type; 
-        carType = modifiedCarType();}    
-    void setHourIn(int hour) { hourIn = hour; }    
-    void setParkTime(int time) {parkTime = time;}    
-    void setParkingFee(double fee) {parkingFee = fee;} 
-    void setIsParked(bool parked) {isParked = parked;}
-    //Hàm chuẩn hóa loại xe
-    string modifiedCarType() {
-        string temp = carType;
+
+    int nhanMaXe() const { return maXe; }
+    string nhanLoaiXe() const { return loaiXe; }
+    int nhanGioGui() const { return gioVao; }
+    int nhanSoGioGui() const { return gioGui; }
+    bool nhanDangGui() const { return trangThaiGui; }    
+    double nhanTienGui() const { return phiGui; }    
+
+    void ganMaXe(int ID) { maXe = ID; }    
+    void ganLoaiXe(string type) {
+        loaiXe = type; 
+        loaiXe = chuanHoaXe();
+    }    
+    void ganGioGui(int hour) { gioVao = hour; }    
+    void ganThoiGianGui(int time) { gioGui = time; }    
+    void ganTienGui(double fee) { phiGui = fee; } 
+    void ganDangGui(bool parked) { trangThaiGui = parked; }
+
+    string chuanHoaXe() {
+        string temp = loaiXe;
         transform(temp.begin(), temp.end(), temp.begin(), ::tolower);        
-        if (temp == "car"){
-            return "Car";
+        if (temp == "oto") {
+            return "Oto";
         }
-
-        if (temp == "motorcycle" || temp == "motorbike"){
-            return "Motorcycle";
+        if (temp == "xemay" || temp == "xe may") {
+            return "xe may";
         } 
-
-        if (temp == "bicycle"){ 
-            return "Bicycle";
+        if (temp == "xedap" || temp == "xe dap") { 
+            return "xe dap";
         }      
-        else{
-        return "Unknown";
-        }
+        return "khong xac dinh";
     }
-    //Hàm xác định xe hợp lệ
-    static bool isValidCarTypeInput(const string& type) {        
+
+    static bool laLoaiXeHopLe(const string& type) {        
         string temp = type;        
         transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
-        return (temp == "car" || temp == "motorcycle" || temp == "motorbike" || temp == "bicycle");}
-    //Hàm tính phí gửi xe
-    double calculateParkingFee() {
-        if (!isParked) {            
-            parkingFee = 0.0;            
+        return (temp == "oto" || temp == "xemay" || temp == "xe may" || temp == "xedap" || temp == "xe dap");
+    }
+
+    double tinhPhiGuiXe() {
+        if (!trangThaiGui) {            
+            phiGui = 0.0;            
             return 0.0;        
         }
         
-        double baseRate = 0.0;
-        if (carType == "Car") {
-            baseRate = 6.0;
+        double tiLeTien = 0.0;
+        if (loaiXe == "Oto") {
+            tiLeTien = 6.0 * 25000;
         }
-        else if (carType == "Motorcycle") {
-            baseRate = 4.0;
+        else if (loaiXe == "xe may") {
+            tiLeTien = 4.0 * 25000;
         }
-        else if (carType == "Bicycle") {
-            baseRate = 2.0;
+        else if (loaiXe == "xe dap") {
+            tiLeTien = 2.0 * 25000;
         }
         
-        // Khung giờ cao điểm: Sáng (6-9) & Chiều Tối (15-18)
-        bool isPeakHour = (hourIn >= 6 && hourIn <= 9) || (hourIn >= 15 && hourIn <= 18);
-        // Đơn giá 2 giờ đầu (+30% cao điểm / -5% thấp điểm)
-        double rateFirst2Hours = isPeakHour ? baseRate * 1.30 : baseRate * 0.95;
-        // Đơn giá từ giờ thứ 3 (-10%)
-        double rateAfter2Hours = baseRate * 0.90;
+        bool gioCaoDiem = (gioVao >= 6 && gioVao <= 9) || (gioVao >= 15 && gioVao <= 18);
+        double tiLeTien2GioDau = gioCaoDiem ? tiLeTien * 1.30 : tiLeTien * 0.95;
+        double tiLeTienSau2GioDau = tiLeTien * 0.90;
 
-        if (parkTime <= 2) {            
-            parkingFee = parkTime * rateFirst2Hours;
+        if (gioGui <= 2) {            
+            phiGui = gioGui * tiLeTien2GioDau;
         }
         else {            
-            parkingFee = (2 * rateFirst2Hours) + ((parkTime - 2) * rateAfter2Hours);
+            phiGui = (2 * tiLeTien2GioDau) + ((gioGui - 2) * tiLeTienSau2GioDau);
         }
-        return parkingFee;    
+        return phiGui;    
     }
-    //Thông tin xe
-    void displayCarInfo() const {
-        if (!isParked) {
+
+    void hienThiThongTinXe() const {
+        if (!trangThaiGui) {
             return;
         }
 
-        cout <<"Car ID: "<<carID<<endl;
-        cout <<"Car Type: "<<carType <<endl;
-        cout <<"Hour In: "<<hourIn<<endl;
-        cout <<"Park Time: "<<parkTime<<endl;
-        cout <<fixed<<setprecision(2)<<"Parking Fee: VND"<<parkingFee<<endl;
-        cout <<"Is Parked: "<<(isParked ? "Yes" : "No")<<endl;
+        cout << "Ma xe: " << maXe << endl;
+        cout << "Loai xe: " << loaiXe << endl;
+        cout << "Gio vao: " << gioVao << endl;
+        cout << "Thoi gian do: " << gioGui << endl;
+        cout << fixed << setprecision(2) << "Phi do xe: " << phiGui << " VND" << endl; 
+        cout << "Dang do xe: " << (trangThaiGui ? "Co" : "Khong") << endl;
     }
 };
-//Lớp bãi đỗ xe
-class ParkingLot {
-    private:
-        int lotID;    
-        char size;    
-        Car car1, car2, car3;    
-        bool hasCar1, hasCar2, hasCar3;
-    public:
-        ParkingLot(): lotID(0), size(' '), hasCar1(false), hasCar2(false), hasCar3(false) {}
-        ParkingLot(int lotID, char size): lotID(lotID), size(toupper(size)), hasCar1(false), hasCar2(false), hasCar3(false) {}
 
-        int getLotID() const {
-            return lotID; 
-        }
-        char getSize() const { 
-            return size; 
-        }
-        int getCapacity() const {        
-            if (size == 'S') {return 1;}        
-            if (size == 'M') {return 2;}        
-            if (size == 'L') {return 3;}        
-            return 0;    
-        } 
-         int getNumCars() const {        
-            int cnt = 0;        
-            if (hasCar1) {cnt++;}        
-            if (hasCar2) {cnt++;}        
-            if (hasCar3) {cnt++;}        
-            return cnt;    
-        }
-        //Thêm xe
-        bool addCar(const Car& car) {
-            int cap = getCapacity();
+class baiDoXe {
+private:
+    int maBai;    
+    char kichThuoc;    
+    Xe xe1, xe2, xe3;
+    bool co1, co2, co3;
 
-            if (getNumCars() >= cap) {return false;}
+public:
+    baiDoXe(): maBai(0), kichThuoc(' '), co1(false), co2(false), co3(false) {}
+    baiDoXe(int maBai, char kichThuoc): maBai(maBai), kichThuoc(toupper(kichThuoc)), co1(false), co2(false), co3(false) {}
 
-            if (!hasCar1 && cap >= 1) {            
-                car1 = car;            
-                hasCar1 = true;            
-                return true;        
-            }
-            if (!hasCar2 && cap >= 2) {            
-                car2 = car;            
-                hasCar2 = true;            
-                return true;        
-            }
-            if (!hasCar3 && cap >= 3) {            
-                car3 = car;            
-                hasCar3 = true;            
-                return true;        
-            }
-            return false;
-        }
-        // Tìm xe
-        bool findCar(int carID) const {
-            if (hasCar1 && car1.getCarID() == carID) {return true;}
-            if (hasCar2 && car2.getCarID() == carID) {return true;}
-            if (hasCar3 && car3.getCarID() == carID) {return true;}
-            return false;
-        }
-        //Xóa xe
-        bool removeCar(int carID) {
-            if (hasCar1 && car1.getCarID() == carID) {            
-                hasCar1 = false;            
-                return true;        
-            }
-            if (hasCar2 && car2.getCarID() == carID) {            
-                hasCar2 = false;            
-                return true;        
-            }
-            if (hasCar3 && car3.getCarID() == carID) {            
-                hasCar3 = false;            
-                return true;        
-            }
-            return false;
-        }
-        //Thông tin bãi đỗ xe
-        void displayParkingLotInfo() const {
-            cout <<"Parking Lot ID: "<<lotID<<endl;
-            cout <<"Capacity: "<<getCapacity()<<endl;
-            cout <<"Number of Cars: "<<getNumCars()<<endl;
+    int ganMaBai() const { 
+        return maBai; 
+    }
+    char ganKichThuoc() const { 
+        return kichThuoc; 
+    }
+    int ganLuongXe() const {        
+        if (kichThuoc == 'S') { return 1; }        
+        if (kichThuoc == 'M') { return 2; }        
+        if (kichThuoc == 'L') { return 3; }        
+        return 0;    
+    } 
+    int ganSoLuongXe() const {        
+        int cnt = 0;        
+        if (co1) { cnt++; }        
+        if (co2) { cnt++; }        
+        if (co3) { cnt++; }        
+        return cnt;    
+    }
 
-            if (hasCar1) {cout << "Car 1:" << endl;            
-            car1.displayCarInfo();cout << endl;}
-            if (hasCar2) {cout << "Car 2:" << endl;            
-            car2.displayCarInfo();cout << endl;}
-            if (hasCar3) {cout << "Car 3:" << endl;            
-            car3.displayCarInfo();cout << endl;}
-        }
-        // Liệt kê xe theo loại
-        void listCarsByType(const string& type) const {
-            if (hasCar1 && car1.getCarType() == type) {
-                cout <<" [Lot "<<lotID<< "]";            
-                car1.displayCarInfo();        
-            }
-            if (hasCar2 && car2.getCarType() == type) {
-                cout <<" [Lot "<<lotID<< "]";            
-                car2.displayCarInfo();        
-            }
-            if (hasCar3 && car3.getCarType() == type) {
-                cout <<" [Lot "<<lotID<< "]";            
-                car3.displayCarInfo();        
-            }
-        }
-        //Báo cáo tóm tắt phí đỗ trung bình
-        void getFeeStatsByType(const string& type, double& totalFee, int& count) const {
-            if (hasCar1 && car1.getCarType() == type) {
-                totalFee += car1.getParkingFee();            
-                count++;        
-            }
-            if (hasCar2 && car2.getCarType() == type) {
-                totalFee += car2.getParkingFee();            
-                count++;        
-            }
-            if (hasCar3 && car3.getCarType() == type) {
-                totalFee += car3.getParkingFee();            
-                count++;        
-            }
-        }
-};
-//UI
-class UI {
-    private:    
-    ParkingLot lot1, lot2, lot3;
-    bool hasLot1, hasLot2, hasLot3;
-    
-    bool isCarInSystem(int carID) const {
-        if (hasLot1 && lot1.findCar(carID)) {return true;}
-        if (hasLot2 && lot2.findCar(carID)) {return true;}
-        if (hasLot3 && lot3.findCar(carID)) {return true;}
+    bool themXe(const Xe& xe) {
+        int cap = (kichThuoc == 'S') ? 1 : (kichThuoc == 'M') ? 2 : 3;
+        if (cap >= 1 && !co1) { xe1 = xe; co1 = true; return true; }
+        if (cap >= 2 && !co2) { xe2 = xe; co2 = true; return true; }
+        if (cap >= 3 && !co3) { xe3 = xe; co3 = true; return true; }
         return false;
     }
-    public:
-    UI(): hasLot1(false), hasLot2(false), hasLot3(false) {}
 
-    //1: Tạo bãi đỗ xe mới
-    void createParkingLot() {
-        if (hasLot1 && hasLot2 && hasLot3) {
-            cout <<"Error: Maximum capacity of 3 parking lots reached!\n";            
+    bool timXe(int maXeInput) const {
+        if (co1 && xe1.nhanMaXe() == maXeInput) return true;
+        if (co2 && xe2.nhanMaXe() == maXeInput) return true;
+        if (co3 && xe3.nhanMaXe() == maXeInput) return true;
+        return false;
+    }
+
+    bool xoaXe(int maXeInput) {
+        if (co1 && xe1.nhanMaXe() == maXeInput) {
+            if (co2) {
+                xe1 = xe2;
+                if (co3) { xe2 = xe3; co3 = false; }
+                else co2 = false;
+            } else co1 = false;
+            return true;
+        }
+        if (co2 && xe2.nhanMaXe() == maXeInput) {
+            if (co3) { xe2 = xe3; co3 = false; }
+            else co2 = false;
+            return true;
+        }
+        if (co3 && xe3.nhanMaXe() == maXeInput) {
+            co3 = false;
+            return true;
+        }
+        return false;
+    }
+
+    void hienThiThongTinBaiDo() const {
+        int cap = (kichThuoc == 'S') ? 1 : (kichThuoc == 'M') ? 2 : 3;
+        int so_xe = co1 + co2 + co3;
+        cout << "Bai " << maBai << " [" << kichThuoc << "] "
+             << so_xe << "/" << cap << " xe\n";
+        if (co1) xe1.hienThiThongTinXe();
+        if (co2) xe2.hienThiThongTinXe();
+        if (co3) xe3.hienThiThongTinXe();
+    }
+
+    void lietKeTheoLoai(const string& type) const {
+        if (co1 && xe1.nhanLoaiXe() == type) {
+            cout << " [Bai do xe " << maBai << "]\n";            
+            xe1.hienThiThongTinXe();        
+        }
+        if (co2 && xe2.nhanLoaiXe() == type) {
+            cout << " [Bai do xe " << maBai << "]\n";            
+            xe2.hienThiThongTinXe();        
+        }
+        if (co3 && xe3.nhanLoaiXe() == type) {
+            cout << " [Bai do xe " << maBai << "]\n";            
+            xe3.hienThiThongTinXe();        
+        }
+    }
+
+    void ganPhiDoTheoLoai(const string& type, double& totalFee, int& count) const {
+        if (co1 && xe1.nhanLoaiXe() == type) {
+            totalFee += xe1.nhanTienGui();            
+            count++;        
+        }
+        if (co2 && xe2.nhanLoaiXe() == type) {
+            totalFee += xe2.nhanTienGui();            
+            count++;        
+        }
+        if (co3 && xe3.nhanLoaiXe() == type) {
+            totalFee += xe3.nhanTienGui();            
+            count++;        
+        }
+    }
+
+    bool co_loai(string loai, int& dem, double& tong) const {
+        dem = 0; tong = 0;
+        if (co1 && xe1.nhanLoaiXe() == loai) { ++dem; tong += xe1.nhanTienGui(); }
+        if (co2 && xe2.nhanLoaiXe() == loai) { ++dem; tong += xe2.nhanTienGui(); }
+        if (co3 && xe3.nhanLoaiXe() == loai) { ++dem; tong += xe3.nhanTienGui(); }
+        return dem > 0;
+    }
+};
+
+class UI {
+private:    
+    baiDoXe bai1, bai2, bai3;
+    bool coBai1, coBai2, coBai3;
+    
+    bool xeCoTrongBai(int carID) const {
+        if (coBai1 && bai1.timXe(carID)) { return true; }
+        if (coBai2 && bai2.timXe(carID)) { return true; }
+        if (coBai3 && bai3.timXe(carID)) { return true; }
+        return false;
+    }
+
+public:
+    UI(): coBai1(false), coBai2(false), coBai3(false) {}
+
+    void taoBaiDoXe() {
+        if (coBai1 && coBai2 && coBai3) {
+            cout << "Toi da 3 bai xe co the tao!\n";            
             return;        
         }
 
         int id;        
         char size;
 
-        cout <<"Enter Lot ID: ";
+        cout << "Nhap ma bai do xe: ";
         cin >> id;
-        if ((hasLot1 && lot1.getLotID() == id) || (hasLot2 && lot2.getLotID() == id) || (hasLot3 && lot3.getLotID() == id)) {
-             cout <<"Error: Lot ID already exists!\n";
+        if ((coBai1 && bai1.ganMaBai() == id) || (coBai2 && bai2.ganMaBai() == id) || (coBai3 && bai3.ganMaBai() == id)) {
+             cout << "Ma bai do xe da ton tai!\n";
              return;
         }
 
-        cout <<"Enter Lot Size (S/M/L): ";
+        cout << "Nhap kich thuoc bai do xe (S/M/L): ";
         cin >> size;
         size = toupper(size);
         if (size != 'S' && size != 'M' && size != 'L') {
-            cout <<"Error: Invalid lot size!\n";
+            cout << "Kich thuoc khong hop le!\n";
             return;
         }
         
-        if (!hasLot1) {lot1 = ParkingLot(id, size);            
-            hasLot1 = true;
+        if (!coBai1) {
+            bai1 = baiDoXe(id, size);            
+            coBai1 = true;
         }
-        else if (!hasLot2) {lot2 = ParkingLot(id, size);            
-            hasLot2 = true;
+        else if (!coBai2) {
+            bai2 = baiDoXe(id, size);            
+            coBai2 = true;
         }
-        else if (!hasLot3) {lot3 = ParkingLot(id, size);            
-            hasLot3 = true;
+        else if (!coBai3) {
+            bai3 = baiDoXe(id, size);            
+            coBai3 = true;
         }
 
-        cout <<"Parking Lot created successfully!\n";
+        cout << "Tao bai do xe thanh cong!\n";
     }
-    //2: Thêm xe vào bãi đỗ
-    void addCarToLot() {
-        if (!hasLot1 && !hasLot2 && !hasLot3) {
-            cout <<"Error: No parking lots available in the system!\n";
+
+    void themXeVaoBai() {
+        if (!coBai1 && !coBai2 && !coBai3) {
+            cout << "Khong co bai do xe trong he thong!\n";
             return;
         }
 
         int id, hour, duration;
         string type;
 
-        cout <<"Enter Car ID: ";
+        cout << "Nhap ma xe: ";
         cin >> id;
-        if (isCarInSystem(id)) {
-            cout <<"Error: Car ID already exists in the system!\n";
+        if (xeCoTrongBai(id)) {
+            cout << "Ma xe da ton tai trong he thong!\n";
             return;
         }
 
-        cout <<"Enter Vehicle Type (Car / Motorcycle / Bicycle): ";
-        cin >> type;
-        if (!Car::isValidCarTypeInput(type)) {
-            cout <<"Error: Invalid vehicle type!\n";
+        cout << "Nhap loai xe (Oto / Xe may / Xe dap): ";
+        cin.ignore();
+        getline(cin, type);
+        if (!Xe::laLoaiXeHopLe(type)) {
+            cout << "Loai xe khong hop le!\n";
             return;
         }
 
-        cout << "Enter Entry Hour (0 - 23): ";
+        cout << "Nhap gio vao (0 - 23): ";
         cin >> hour;
         if (hour < 0 || hour > 23) {
-            cout <<"Error: Entry hour must be between 0 and 23!\n";
+            cout << "Gio vao phai nam trong khoang 0 - 23!\n";
             return;
         }
 
-        cout << "Enter Parking Duration (1 - 23): ";
+        cout << "Nhap thoi gian gui (1 - 23): ";
         cin >> duration;
         if (duration < 1 || duration > 23) { 
-            cout <<"Error: Parking duration must be between 1 and 23!\n";
+            cout << "Thoi gian gui phai nam trong khoang 1 - 23!\n";
             return;
         }
 
-        Car car(id, type, hour, duration);
-        if (hasLot1 && lot1.addCar(car)) {
-            cout <<"Added car to Lot ID "<<lot1.getLotID()<<endl;
+        Xe xe(id, type, hour, duration);
+        if (coBai1 && bai1.themXe(xe)) {
+            cout << "Da them xe vao bai " << bai1.ganMaBai() << endl;
             return;
         }
-        if (hasLot2 && lot2.addCar(car)) {
-            cout <<"Added car to Lot ID "<<lot2.getLotID()<<endl;
+        if (coBai2 && bai2.themXe(xe)) {
+            cout << "Da them xe vao bai " << bai2.ganMaBai() << endl;
             return;
         }
-        if (hasLot3 && lot3.addCar(car)) {
-            cout <<"Added car to Lot ID "<<lot3.getLotID()<<endl;
+        if (coBai3 && bai3.themXe(xe)) {
+            cout << "Da them xe vao bai " << bai3.ganMaBai() << endl;
             return;
         }
         else {
-            cout <<"Error: All available parking lots are full!\n";    
+            cout << "Tat ca cac bai do xe da day!\n";    
         }
     }
-    //3: Xóa bãi đỗ xe
-    void removeParkingLot() {
+
+    void xoaBaiDoXe() {
         int id;
-        cout <<"Enter Lot ID to remove: ";
+        cout << "Nhap ma bai do xe can xoa: ";
         cin >> id;
 
-        if (hasLot1 && lot1.getLotID() == id) {
-        hasLot1 = false;           
-        lot1 = ParkingLot();            
-        cout <<"Removed Lot ID "<<id<<endl;           
-        return;        
+        if (coBai1 && bai1.ganMaBai() == id) {
+            coBai1 = false;           
+            bai1 = baiDoXe();            
+            cout << "Da xoa bai do xe " << id << endl;           
+            return;        
         }
-        if (hasLot2 && lot2.getLotID() == id) {
-        hasLot2 = false;           
-        lot2 = ParkingLot();            
-        cout <<"Removed Lot ID "<<id<<endl;           
-        return;        
+        if (coBai2 && bai2.ganMaBai() == id) {
+            coBai2 = false;           
+            bai2 = baiDoXe();            
+            cout << "Da xoa bai do xe " << id << endl;           
+            return;        
         }
-        if (hasLot3 && lot3.getLotID() == id) {
-        hasLot3 = false;           
-        lot3 = ParkingLot();            
-        cout <<"Removed Lot ID "<<id<<endl;           
-        return;        
+        if (coBai3 && bai3.ganMaBai() == id) {
+            coBai3 = false;           
+            bai3 = baiDoXe();            
+            cout << "Da xoa bai do xe " << id << endl;           
+            return;        
         }
         else {
-            cout <<"Error: Lot ID not found!\n";
+            cout << "Ma bai do xe khong ton tai!\n";
         }
     }
-    //4: Lấy xe ra khỏi bãi
-    void removeCarFromLot() {
+
+    void xoaXeKhoiBai() {
         int id;
-        cout <<"Enter Car ID to remove: "; 
+        cout << "Nhap ma xe can lay ra: "; 
         cin >> id;
 
-        if (hasLot1 && lot1.removeCar(id)) {
-            cout <<"Removed Car ID "<<id<<" from Lot "<<lot1.getLotID()<<endl;
+        if (coBai1 && bai1.xoaXe(id)) {
+            cout << "Da lay xe ra khoi bai do xe " << bai1.ganMaBai() << endl;
             return;        
         }
-        if (hasLot2 && lot2.removeCar(id)) {
-            cout <<"Removed Car ID "<<id<<" from Lot "<<lot2.getLotID()<<endl;
+        if (coBai2 && bai2.xoaXe(id)) {
+            cout << "Da lay xe ra khoi bai do xe " << bai2.ganMaBai() << endl;
             return;        
         }
-        if (hasLot3 && lot3.removeCar(id)) {
-            cout <<"Removed Car ID "<<id<<" from Lot "<<lot3.getLotID()<<endl;
+        if (coBai3 && bai3.xoaXe(id)) {
+            cout << "Da lay xe ra khoi bai do xe " << bai3.ganMaBai() << endl;
             return;        
         }
         else {
-            cout <<"Error: Car ID not found!\n";
+            cout << "Ma xe khong ton tai!\n";
         }
     }
-    //5: Hiển thị danh sách tất cả các bãi đỗ
-    void displayAllLots() {
-        if (!hasLot1 && !hasLot2 && !hasLot3) {
-            cout <<"System has no parking lots!\n";
+
+    void hienThiBaiDoXe() {
+        if (!coBai1 && !coBai2 && !coBai3) {
+            cout << "He thong khong co bai do xe!\n";
             return;        
         }
 
-        cout <<"\n=== PARKING LOT LIST ===\n";
-        if (hasLot1) {lot1.displayParkingLotInfo();}
-        if (hasLot2) {lot2.displayParkingLotInfo();}
-        if (hasLot3) {lot3.displayParkingLotInfo();}
+        cout << "\n=== DANH SACH BAI DO XE ===\n";
+        if (coBai1) { bai1.hienThiThongTinBaiDo(); }
+        if (coBai2) { bai2.hienThiThongTinBaiDo(); }
+        if (coBai3) { bai3.hienThiThongTinBaiDo(); }
     }
-    //6: Hiển thị danh sách xe theo bãi cụ thể
-    void displayCarsInLot() {
+
+    void hienThiXeTheoBai() {
         int id;
-        cout <<"Enter Lot ID to view: ";
+        cout << "Nhap ma bai do xe can xem: ";
         cin >> id;
 
-        if (hasLot1 && lot1.getLotID() == id) { 
-            lot1.displayParkingLotInfo();
+        if (coBai1 && bai1.ganMaBai() == id) { 
+            bai1.hienThiThongTinBaiDo();
             return;        
         }
-        if (hasLot2 && lot2.getLotID() == id) { 
-            lot2.displayParkingLotInfo();
+        if (coBai2 && bai2.ganMaBai() == id) { 
+            bai2.hienThiThongTinBaiDo();
             return;        
         }
-        if (hasLot3 && lot3.getLotID() == id) { 
-            lot3.displayParkingLotInfo();
+        if (coBai3 && bai3.ganMaBai() == id) { 
+            bai3.hienThiThongTinBaiDo();
             return;        
         }
         else {
-            cout <<"Error: Lot ID not found!\n";
+            cout << "Ma bai do xe khong ton tai!\n";
         }
     }
-    //7: Liệt kê xe theo loại
-    void listCarsByType() {
+
+    void lietKeXeTheoLoai() {
         string type;
-        cout <<"Enter Vehicle Type (Car / Motorcycle / Bicycle): ";
-        cin >> type;
+        cout << "Nhap loai xe (Oto / Xe may / Xe dap): ";
+        cin.ignore();
+        getline(cin, type);
 
-        if (!Car::isValidCarTypeInput(type)) {
-            cout <<"Error: Invalid vehicle type!\n";
+        if (!Xe::laLoaiXeHopLe(type)) {
+            cout << "Loai xe khong hop le!\n";
             return;
         }
 
-        Car temp(0, type, 0, 0);
-        string normalizedType = temp.getCarType();
-        cout <<"\n=== LIST OF VEHICLES (TYPE: "<< normalizedType<< ") ===\n";
+        Xe temp(0, type, 0, 0);
+        string normalizedType = temp.nhanLoaiXe();
+        cout << "\n=== DANH SACH XE (LOAI XE : " << normalizedType << ") ===\n";
 
-        if (hasLot1) {lot1.listCarsByType(normalizedType);}
-        if (hasLot2) {lot2.listCarsByType(normalizedType);}
-        if (hasLot3) {lot3.listCarsByType(normalizedType);}
+        if (coBai1) { bai1.lietKeTheoLoai(normalizedType); }
+        if (coBai2) { bai2.lietKeTheoLoai(normalizedType); }
+        if (coBai3) { bai3.lietKeTheoLoai(normalizedType); }
     }
-    //8: Báo cáo tóm tắt phí đỗ trung bình
-    void displayAverageFeeReport() { 
-        string types[3] = {"Car", "Motorcycle", "Bicycle"};
-        cout <<"\n=== AVERAGE PARKING FEE REPORT ===\n";
+
+    void hienThiPhiDoTrungBinh() { 
+        string types[3] = {"Oto", "xe may", "xe dap"};
+        cout << "\n=== BAO CAO PHI DO XE TRUNG BINH ===\n";
         for (int i = 0; i < 3; ++i) {
             double totalFee = 0.0;
             int count = 0;
 
-            if (hasLot1) {lot1.getFeeStatsByType(types[i], totalFee, count);}
-            if (hasLot2) {lot2.getFeeStatsByType(types[i], totalFee, count);}
-            if (hasLot3) {lot3.getFeeStatsByType(types[i], totalFee, count);}
+            if (coBai1) { bai1.ganPhiDoTheoLoai(types[i], totalFee, count); }
+            if (coBai2) { bai2.ganPhiDoTheoLoai(types[i], totalFee, count); }
+            if (coBai3) { bai3.ganPhiDoTheoLoai(types[i], totalFee, count); }
 
-            cout <<"Type: "<< types[i]<<" | Count: "<< count;
+            cout << "Loai xe: " << types[i] << " | So luong: " << count;
             if (count > 0) {
-                cout <<" | Avg Fee: VND "<<fixed<<setprecision(2)<<(totalFee / count)<<endl;
+                cout << " | Phi do trung binh: " << fixed << setprecision(2) << (totalFee / count) << " VND" << endl;
             }
             else {
-                cout <<" | Avg Fee: 0.0 VND"<<endl;
+                cout << " | Phi do trung binh: 0.00 VND" << endl;
             }
         }
     }
-    //Menu
+
     void runMenu() {
         int choice = 0;
         do {
-        cout <<"\n================ PARKING MANAGEMENT SYSTEM ================\n";
-        cout <<"1. Create New Parking Lot\n";            
-        cout <<"2. Add Car to Lot\n";            
-        cout <<"3. Remove a Parking Lot\n";            
-        cout <<"4. Remove Car from Lot\n";            
-        cout <<"5. Display All Parking Lots\n";            
-        cout <<"6. Display Cars in Specific Lot\n";
-        cout <<"7. List Vehicles by Type\n";            
-        cout <<"8. View Average Parking Fee Report\n";
-        cout <<"9. Exit\n";            
-        cout <<"Enter your choice (1-9): ";
-        cin >> choice;
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(10000, '\n');
-            cout <<"Invalid input! Please enter a number between 1 and 9.\n";
-            continue;
-        }
-        switch (choice) {
-            case 1: createParkingLot();
-            break;
-            case 2: addCarToLot();
-            break;
-            case 3: removeParkingLot();
-            break;
-            case 4: removeCarFromLot();
-            break;
-            case 5: displayAllLots();
-            break;
-            case 6: displayCarsInLot();
-            break;
-            case 7: listCarsByType();
-            break;
-            case 8: displayAverageFeeReport();
-            break;
-            case 9: 
-            cout <<"Exiting the system. Goodbye!\n";
-            break;
-            default: 
-            cout <<"Invalid choice! Please try again!\n";
-            break;
-        }
-    } while (choice != 9);
+            cout << "\n================ HE THONG QUAN LY BAI DO XE ================\n";
+            cout << "1. Tao bai do xe moi\n";            
+            cout << "2. Them xe vao bai\n";            
+            cout << "3. Xoa bai do xe\n";            
+            cout << "4. Xoa xe khoi bai\n";            
+            cout << "5. Hien thi cac bai do xe\n";            
+            cout << "6. Hien thi xe trong bai cu the\n";
+            cout << "7. Liet ke danh sach phuong tien theo tung loai xe\n";            
+            cout << "8. Hien thi phi do xe trung binh cua cac loai xe\n";
+            cout << "9. Thoat\n";            
+            cout << "Nhap so (1-9): ";
+            cin >> choice;
+
+            if (cin.fail()) {
+                cin.clear();
+                cin.ignore(10000, '\n');
+                cout << "Chi nhap so tu 1 den 9!\n";
+                continue;
+            }
+
+            switch (choice) {
+                case 1: taoBaiDoXe();
+                    break;
+                case 2: themXeVaoBai();
+                    break;
+                case 3: xoaBaiDoXe();
+                    break;
+                case 4: xoaXeKhoiBai();
+                    break;
+                case 5: hienThiBaiDoXe();
+                    break;
+                case 6: hienThiXeTheoBai();
+                    break;
+                case 7: lietKeXeTheoLoai();
+                    break;
+                case 8: hienThiPhiDoTrungBinh();
+                    break;
+                case 9: 
+                    cout << "Da thoat khoi he thong\n";
+                    break;
+                default: 
+                    cout << "Lua chon khong hop le! Hay thu lai!\n";
+                    break;
+            }
+        } while (choice != 9);
     }
 };
-//Main
+
 int main() {
     UI ui;
     ui.runMenu();
